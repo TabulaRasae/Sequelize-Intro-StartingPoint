@@ -35,23 +35,25 @@ router.get("/", async (req, res) => {
 // });
 
 // GET a single task by id
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const task = Task.findByPk(id);
+    const task = await Task.findByPk(id);
     res.send(task);
   } catch (error) {
-    console.error("Failed to find the specific task you are lookng for");
+    console.error("Failed to find the specific task you are looking for");
     res.sendStatus(404);
   }
 });
 
 // Patch a task by id
-router.patch("/:id", (req, res) => {
+router.patch("/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
     const changes = req.body;
-    Task.update(id, changes);
+    const task = await Task.findByPk(id);
+    await task.update(changes);
+    
     res.sendStatus(200);
   } catch (error) {
     console.error("Failed to update the specific task", error);
@@ -60,27 +62,32 @@ router.patch("/:id", (req, res) => {
 });
 
 // Delete a task by id
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
-    Task.delete(id);
+    await Task.destroy({
+      where: {
+        id: id,
+      },
+    });
   } catch (error) {
-    console.error("Failed to delete the task", error);
+    console.error("Failed to delete the task, dog", error);
     res.sendStatus(404);
   }
 });
 
 // Create a new task
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const task = req.body;
-    Task.create(task);
-    res.sendStatus(201);
+    const task = await req.body;
+    const createdTask = await Task.create(task);
+    res.status(201).json(createdTask);
   } catch (error) {
     console.error("Failed to create a new task", error);
     res.sendStatus(404);
   }
 });
+
 module.exports = router;
 // GET a single task by id
 
