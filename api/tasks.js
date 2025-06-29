@@ -39,6 +39,9 @@ router.get("/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
     const task = await Task.findByPk(id);
+    if (!task) {
+      return res.sendStatus(404);
+    }
     res.send(task);
   } catch (error) {
     console.error("Failed to find the specific task you are looking for");
@@ -54,7 +57,7 @@ router.patch("/:id", async (req, res) => {
     const task = await Task.findByPk(id);
     await task.update(changes);
     
-    res.sendStatus(200);
+    res.status(200).json(task);
   } catch (error) {
     console.error("Failed to update the specific task", error);
     res.sendStatus(404);
@@ -70,6 +73,7 @@ router.delete("/:id", async (req, res) => {
         id: id,
       },
     });
+    res.sendStatus(200);
   } catch (error) {
     console.error("Failed to delete the task, dog", error);
     res.sendStatus(404);
@@ -82,7 +86,7 @@ router.post("/", async (req, res) => {
     const task = await req.body;
     const createdTask = await Task.create(task);
     res.status(201).json(createdTask);
-  } catch (error) {
+    const task = req.body;
     console.error("Failed to create a new task", error);
     res.sendStatus(404);
   }
@@ -96,8 +100,6 @@ module.exports = router;
 // Delete a task by id
 
 // Create a new task
-
-module.exports = router;
 
 // TASK 5: Create a new routes file for users, and add as many routes as you see fit
 // Don't forget to export the router, and import it into api/index.js
