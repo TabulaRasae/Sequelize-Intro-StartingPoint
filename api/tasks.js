@@ -83,10 +83,10 @@ router.delete("/:id", async (req, res) => {
 // Create a new task
 router.post("/", async (req, res) => {
   try {
-    const task = await req.body;
+    const task = req.body;
     const createdTask = await Task.create(task);
     res.status(201).json(createdTask);
-    const task = req.body;
+  } catch (error) {
     console.error("Failed to create a new task", error);
     res.sendStatus(404);
   }
